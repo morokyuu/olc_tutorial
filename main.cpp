@@ -21,7 +21,7 @@ private:
     float fBatPos = 20.0f;
     float fBatWidth = 40.0f;
     olc::vf2d vBall = { 200.0f, 200.0f };
-    float fBatSpeed = 0.1f;
+    float fBatSpeed = 250.0f;
     float fBallRadius = 5.0f;
     
 public:
@@ -33,10 +33,12 @@ public:
 	bool OnUserUpdate(float fElapsedTime) override
 	{
         // Handle User Input
-        if (GetKey(olc::Key::LEFT).bHeld) fBatPos -= fBatSpeed;
-        if (GetKey(olc::Key::RIGHT).bHeld) fBatPos += fBatSpeed;
+        if (GetKey(olc::Key::LEFT).bHeld) fBatPos -= fBatSpeed * fElapsedTime;
+        if (GetKey(olc::Key::RIGHT).bHeld) fBatPos += fBatSpeed * fElapsedTime;
         if (fBatPos < 11.0f) fBatPos = 11.0f;
         if (fBatPos + fBatWidth > float(ScreenWidth()) - 10.0f) fBatPos = float(ScreenWidth()) - 10.0f - fBatWidth;
+
+        printf("%f\n", fElapsedTime);
 
         if (GetMouse(0).bHeld)
         {
