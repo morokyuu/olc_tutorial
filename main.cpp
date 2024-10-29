@@ -22,6 +22,7 @@ private:
     float fBatWidth = 40.0f;
     olc::vf2d vBall = { 200.0f, 200.0f };
     float fBatSpeed = 0.1f;
+    float fBallRadius = 5.0f;
     
 public:
 	bool OnUserCreate() override
@@ -31,14 +32,22 @@ public:
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
-        Clear(olc::DARK_BLUE);
-
         // Handle User Input
         if (GetKey(olc::Key::LEFT).bHeld) fBatPos -= fBatSpeed;
         if (GetKey(olc::Key::RIGHT).bHeld) fBatPos += fBatSpeed;
-
         if (fBatPos < 11.0f) fBatPos = 11.0f;
         if (fBatPos + fBatWidth > float(ScreenWidth()) - 10.0f) fBatPos = float(ScreenWidth()) - 10.0f - fBatWidth;
+
+        if (GetMouse(0).bHeld)
+        {
+            vBall = { float(GetMouseX()), float(GetMouseY()) };
+        }
+
+        if (GetMouseWheel() > 0) fBallRadius += 1.0f;
+        if (GetMouseWheel() < 0) fBallRadius -= 1.0f;
+        if (fBallRadius < 5.0f) fBallRadius = 5.0f;
+
+        Clear(olc::DARK_BLUE);
 
         //Boundary
         DrawLine(10, 10, ScreenWidth()-10, 10, olc::YELLOW);
@@ -48,7 +57,7 @@ public:
         FillRect(int(fBatPos),ScreenHeight()-20,int(fBatWidth),10,olc::GREEN);
 
         //Draw Ball
-        FillCircle(vBall, 5, olc::CYAN);
+        FillCircle(vBall, fBallRadius, olc::CYAN);
 
 		DrawString(olc::vf2d(100, 200), "Hello", olc::WHITE, 1);
 
