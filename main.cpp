@@ -21,17 +21,24 @@ private:
     float fBatPos = 20.0f;
     float fBatWidth = 40.0f;
     olc::vf2d vBall = { 200.0f, 200.0f };
+    float fBatSpeed = 0.1f;
     
 public:
 	bool OnUserCreate() override
 	{
-		// Called once at the start, so create things here
 		return true;
 	}
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
         Clear(olc::DARK_BLUE);
+
+        // Handle User Input
+        if (GetKey(olc::Key::LEFT).bHeld) fBatPos -= fBatSpeed;
+        if (GetKey(olc::Key::RIGHT).bHeld) fBatPos += fBatSpeed;
+
+        if (fBatPos < 11.0f) fBatPos = 11.0f;
+        if (fBatPos + fBatWidth > float(ScreenWidth()) - 10.0f) fBatPos = float(ScreenWidth()) - 10.0f - fBatWidth;
 
         //Boundary
         DrawLine(10, 10, ScreenWidth()-10, 10, olc::YELLOW);
