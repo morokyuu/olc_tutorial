@@ -99,12 +99,7 @@ public:
             }
         };
 
-        // four sides
-        bool bHasHitTile = false;
-        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(0, -1));
-        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(0, +1));
-        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(-1, 0));
-        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(+1, 0));
+        
 
         // Handle User Input
         if (GetKey(olc::Key::LEFT).bHeld) fBatPos -= fBatSpeed * fElapsedTime;
@@ -112,14 +107,20 @@ public:
         if (fBatPos < 11.0f) fBatPos = 11.0f;
         if (fBatPos + fBatWidth > float(ScreenWidth()) - 10.0f) fBatPos = float(ScreenWidth()) - 10.0f - fBatWidth;
 
-
+        // four sides
+        bool bHasHitTile = false;
+        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(0, -1));
+        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(0, +1));
+        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(-1, 0));
+        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(+1, 0));
+        
         // Fake Floor
-        if(vBallPos.y > 20.0f) vBallDir.y *= -1.0f;
+        if (vBallPos.y > 20.0f) vBallDir.y *= -1.0f;
 
         // Actually update ball position with modified direction
         vBallPos += vBallDir * fBallSpeed * fElapsedTime;
 
-        // Erase previous frame
+        // Draw Screen
         Clear(olc::DARK_BLUE);
         SetPixelMode(olc::Pixel::MASK);
         for (int y = 0; y < 30; y++)
