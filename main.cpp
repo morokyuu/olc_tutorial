@@ -173,7 +173,7 @@ public:
 int main()
 {
 	BreakOut demo;
-	if (demo.Construct(512, 480, 2, 2))
+	if (demo.Construct(512, 480, 2, 2, false, true))
 		demo.Start();
 
 	return 0;
