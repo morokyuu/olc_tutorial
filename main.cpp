@@ -24,7 +24,7 @@ private:
 
     olc::vf2d vBallPos = { 0.0f, 0.0f };
     olc::vf2d vBallDir = { 0.0f, 0.0f };
-    float fBatSpeed = 0.0f;
+    float fBallSpeed = 0.0f;
     float fBallRadius = 5.0f;
 
     olc::vi2d vBlockSize = {16,16};
@@ -54,9 +54,8 @@ public:
                     blocks[y * 24 + x] = 3;
             }
         }
-
         // Load the sprite
-        sprTile = std::make_unique<olc::Sprite>("./gfx/tut_tiles.png");
+        sprTile = std::make_unique<olc::Sprite>("./tut_tiles.png");
 
         // Start Ball
         float fAngle = float(rand()) /float(RAND_MAX) * 2.0f * 3.14159;
@@ -68,11 +67,37 @@ public:
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
+        Clear(olc::DARK_BLUE);
+
+        FillRect(olc::vi2d(20, 20) * vBlockSize, vBlockSize, olc::WHITE);
+        DrawPartialSprite(olc::vi2d(21, 20) * vBlockSize, sprTile.get(), olc::vi2d(0, 0) * vBlockSize, vBlockSize);
+
+/*
+        SetPixelMode(olc::Pixel::MASK);
+        for (int y = 0; y < 30; y++)
+        {
+            for (int x = 0; x < 24; x++)
+            {
+                switch (blocks[y * 24 + x])
+                {
+                case 0:
+                    break;
+                case 10: // Draw Boundary
+                    //FillRect(olc::vi2d(x, y) * vBlockSize, vBlockSize, olc::WHITE);
+                    DrawPartialSprite(olc::vi2d(x, y) * vBlockSize, sprTile.get(), olc::vi2d(0, 0) * vBlockSize, vBlockSize);
+                    break;
+                }
+            }
+        }
+        SetPixelMode(olc::Pixel::NORMAL);
+        */
+
+        /*
         // Calculate where ball should be, if no collision
         olc::vf2d vPotentialBallPos = vBallPos + vBallDir * fBallSpeed * fElapsedTime;
 
         // Test for hits 4 points around ball
-        olc::vf2d vTileBallRadialDims = {fBallRadius / vBlockSize.x, fBallRadius / vBalockSize.y};
+        olc::vf2d vTileBallRadialDims = {fBallRadius / vBlockSize.x, fBallRadius / vBlockSize.y};
 
         auto TestResolveCollisionPoint = [&](const olc::vf2d& point)
         {
@@ -111,8 +136,6 @@ public:
         if (fBatPos < 11.0f) fBatPos = 11.0f;
         if (fBatPos + fBatWidth > float(ScreenWidth()) - 10.0f) fBatPos = float(ScreenWidth()) - 10.0f - fBatWidth;
 
-        // Update Ball
-        vBall += vBallVel * fElapsedTime;
 
         // Fake Floor
         if(vBallPos.y > 20.0f) vBallDir.y *= -1.0f;
@@ -148,32 +171,23 @@ public:
         }
         SetPixelMode(olc::Pixel::NORMAL);
 
-        //
-        
-
-        // Arena detection
-        if(vBall.y <= 10.0f) vBallVel.y *= -1.0f;
-        if(vBall.x <= 10.0f) vBallVel.x *= -1.0f;
-        if(vBall.x >= float(ScreenWidth()) - 10.0f) vBallVel.x *= -1.0f;
-
-        if(vBall.y >= (float(ScreenHeight()) - 20.0f) && (vBall.x > fBatPos) && (vBall.x < fBatPos + fBatWidth))
-            vBallVel.y *= -1.0f;
-
-        // Check if Ball has gone off screen
-        if(vBall.y > ScreenHeight())
-        {
-            // Reset ball location
-            vBall = {200.0f, 200.0f};
-            // Choose Random direction
-            float fAngle = (float(rand()) / float(RAND_MAX)) * 2.0f * 3.14159;
-            vBallVel = {300.0f * cos(fAngle), 300.0f * sin(fAngle)};
-        }
+//        // Check if Ball has gone off screen
+//        if(vBall.y > ScreenHeight())
+//        {
+//            // Reset ball location
+//            vBall = {200.0f, 200.0f};
+//            // Choose Random direction
+//            float fAngle = (float(rand()) / float(RAND_MAX)) * 2.0f * 3.14159;
+//            vBallVel = {300.0f * cos(fAngle), 300.0f * sin(fAngle)};
+//        }
 
 //        // Draw Bat
 //        FillRect(int(fBatPos), ScreenHeight() - 20, int(fBatWidth), 10, olc::GREEN);
 
         // Draw Ball
         FillCircle(vBallPos * vBlockSize, fBallRadius, olc::CYAN);
+
+        */
 		return true;
 	}
 };
