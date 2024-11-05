@@ -72,7 +72,6 @@ public:
         FillRect(olc::vi2d(20, 20) * vBlockSize, vBlockSize, olc::WHITE);
         DrawPartialSprite(olc::vi2d(21, 20) * vBlockSize, sprTile.get(), olc::vi2d(0, 0) * vBlockSize, vBlockSize);
 
-/*
         SetPixelMode(olc::Pixel::MASK);
         for (int y = 0; y < 30; y++)
         {
@@ -90,7 +89,6 @@ public:
             }
         }
         SetPixelMode(olc::Pixel::NORMAL);
-        */
 
         /*
         // Calculate where ball should be, if no collision
