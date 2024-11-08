@@ -24,7 +24,7 @@ private:
 
     olc::vf2d vBallPos = { 0.0f, 0.0f };
     olc::vf2d vBallDir = { 0.0f, 0.0f };
-    float fBallSpeed = 20.0f;
+    float fBallSpeed = 40.0f;
     float fBallRadius = 5.0f;
 
     olc::vi2d vBlockSize = {16,16};
@@ -57,7 +57,7 @@ public:
 
         for (int x = 1; x < 23; x++)
         {
-            blocks[20 * 24 + x] = 10;
+            blocks[14 * 24 + x] = 10;
         }
 
         // Load the sprite
