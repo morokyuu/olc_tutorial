@@ -54,6 +54,12 @@ public:
                     blocks[y * 24 + x] = 3;
             }
         }
+
+        for (int x = 1; x < 23; x++)
+        {
+            blocks[20 * 24 + x] = 10;
+        }
+
         // Load the sprite
         sprTile = std::make_unique<olc::Sprite>("./tut_tiles.png");
 
@@ -115,7 +121,7 @@ public:
         bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(+1, 0));
         
         // Fake Floor
-        if (vBallPos.y > 20.0f) vBallDir.y *= -1.0f;
+        //if (vBallPos.y > 20.0f) vBallDir.y *= -1.0f;
 
         // Actually update ball position with modified direction
         vBallPos += vBallDir * fBallSpeed * fElapsedTime;
