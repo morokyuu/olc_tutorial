@@ -24,13 +24,15 @@ private:
 
     olc::vf2d vBallPos = { 0.0f, 0.0f };
     olc::vf2d vBallDir = { 0.0f, 0.0f };
-    float fBallSpeed = 40.0f;
+    float fBallSpeed = 20.0f;
     float fBallRadius = 5.0f;
 
     olc::vi2d vBlockSize = {16,16};
     std::unique_ptr<int[]> blocks;
+
     std::unique_ptr<olc::Sprite> sprTile;
-    std::unique_ptr<olc::Decal> sprFragment;
+    std::unique_ptr<olc::Sprite> sprFragment;
+    std::unique_ptr<olc::Decal> decFragment;
 
     struct sFragment
     {
@@ -96,7 +98,7 @@ public:
         // Test for hits 4 points around ball
         olc::vf2d vTileBallRadialDims = {fBallRadius / vBlockSize.x, fBallRadius / vBlockSize.y};
 
-        auto TestResolveCollisionPoint = [&](const olc::vf2d& point)
+        auto TestResolveCollisionPoint = [&](const olc::vf2d& point, olc::vf2d& hitpos, int& id)
         {
             olc::vi2d vTestPoint = vPotentialBallPos + vTileBallRadialDims * point;
             auto& tile = blocks[vTestPoint.y * 24 + vTestPoint.x];
@@ -132,19 +134,20 @@ public:
         if (fBatPos + fBatWidth > float(ScreenWidth()) - 10.0f) fBatPos = float(ScreenWidth()) - 10.0f - fBatWidth;
 
         // four sides
-        bool bHasHitTile = false;
+        bool bHashHitTile = false;
         olc::vf2d hitpos;
-        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(0, -1), hispos, hitid);
-        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(0, +1), hispos, hitid);
-        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(-1, 0), hispos, hitid);
-        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(+1, 0), hispos, hitid);
+        int hitid = 0;
+        bHashHitTile |= TestResolveCollisionPoint(olc::vf2d(0, -1), hitpos, hitid);
+        bHashHitTile |= TestResolveCollisionPoint(olc::vf2d(0, +1), hitpos, hitid);
+        bHashHitTile |= TestResolveCollisionPoint(olc::vf2d(-1, 0), hitpos, hitid);
+        bHashHitTile |= TestResolveCollisionPoint(olc::vf2d(+1, 0), hitpos, hitid);
 
         if (bHashHitTile)
         {
             for (int i = 0; i < 100; i++)
             {
                 sFragment f;
-                f.pos = { hispos.x + 0.5f, hispos.y + 0.5f };
+                f.pos = { hitpos.x + 0.5f, hitpos.y + 0.5f };
                 float fAngle = float(rand()) / float(RAND_MAX) * 2.0f * 3.14159f;
                 float fVelocity = float(rand()) / float(RAND_MAX) * 10.0f;
                 f.vel = { fVelocity * cos(fAngle), fVelocity * sin(fAngle) };
