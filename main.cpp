@@ -29,8 +29,18 @@ private:
 
     olc::vi2d vBlockSize = {16,16};
     std::unique_ptr<int[]> blocks;
-
     std::unique_ptr<olc::Sprite> sprTile;
+    std::unique_ptr<olc::Decal> sprFragment;
+
+    struct sFragment
+    {
+        olc::vf2d pos;
+        olc::vf2d vel;
+        float fAngle;
+        float fTime;
+        olc::Pixel colour;
+    };
+    std::list<sFragment> listFragments;
 
     
 public:
@@ -63,6 +73,11 @@ public:
         // Load the sprite
         sprTile = std::make_unique<olc::Sprite>("./tut_tiles.png");
 
+        // Load Fragment Sprite 
+        sprFragment = std::make_unique<olc::Sprite>("./tut_fragment.png");
+        // Create decal of fragment 
+        decFragment = std::make_unique<olc::Decal>(sprFragment.get());
+
         // Start Ball
         float fAngle = float(rand()) /float(RAND_MAX) * 2.0f * 3.14159;
         fAngle = -0.4;
@@ -94,13 +109,16 @@ public:
             {
                 // Ball has collided with a tile
                 bool bTileHit = tile < 10;
-                if(bTileHit) tile--;
+                if(bTileHit)
+                {
+                    id = tile;
+                    hitpos = { float(vTestPoint.x), float(vTestPoint.y) };
+                    tile--;
+                }
 
                 // Collision response
-                if(point.x == 0.0f)
-                    vBallDir.y *= -1.0f;
-                if(point.y == 0.0f)
-                    vBallDir.x *= -1.0f;
+                if(point.x == 0.0f) vBallDir.y *= -1.0f;
+                if(point.y == 0.0f) vBallDir.x *= -1.0f;
                 return bTileHit;
             }
         };
@@ -115,16 +133,51 @@ public:
 
         // four sides
         bool bHasHitTile = false;
-        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(0, -1));
-        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(0, +1));
-        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(-1, 0));
-        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(+1, 0));
+        olc::vf2d hitpos;
+        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(0, -1), hispos, hitid);
+        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(0, +1), hispos, hitid);
+        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(-1, 0), hispos, hitid);
+        bHasHitTile |= TestResolveCollisionPoint(olc::vf2d(+1, 0), hispos, hitid);
+
+        if (bHashHitTile)
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                sFragment f;
+                f.pos = { hispos.x + 0.5f, hispos.y + 0.5f };
+                float fAngle = float(rand()) / float(RAND_MAX) * 2.0f * 3.14159f;
+                float fVelocity = float(rand()) / float(RAND_MAX) * 10.0f;
+                f.vel = { fVelocity * cos(fAngle), fVelocity * sin(fAngle) };
+                f.fAngle = fAngle;
+                f.fTime = 3.0f;
+                if (hitid == 1) f.colour = olc::RED;
+                if (hitid == 2) f.colour = olc::GREEN;
+                if (hitid == 3) f.colour = olc::YELLOW;
+                listFragments.push_back(f);
+            }
+        }
+                
         
         // Fake Floor
         //if (vBallPos.y > 20.0f) vBallDir.y *= -1.0f;
 
         // Actually update ball position with modified direction
         vBallPos += vBallDir * fBallSpeed * fElapsedTime;
+
+        // Update fragments
+        for  (auto& f : listFragments)
+        {
+            f.vel += olc::vf2d(0.0f, 20.0f) * fElapsedTime;
+            f.pos += f.vel * fElapsedTime;
+            f.fAngle += 5.0f * fElapsedTime;
+            f.fTime -= fElapsedTime;
+            f.colour.a = (f.fTime / 3.0f) * 255;
+        }
+
+        // Remove dead fragments
+        listFragments.erase(
+            std::remove_if(listFragments.begin(), listFragments.end(), [](const sFragment& f) { return f.fTime < 0.0f; }),listFragments.end()
+        );
 
         // Draw Screen
         Clear(olc::DARK_BLUE);
@@ -169,6 +222,10 @@ public:
 
         // Draw Ball
         FillCircle(vBallPos * vBlockSize, fBallRadius, olc::CYAN);
+
+        // Draw Fragments
+        for (auto& f : listFragments)
+            DrawRotatedDecal(f.pos * vBlockSize, decFragment.get(), f.fAngle, { 4, 4 }, { 1, 1 }, f.colour);
 
 		return true;
 	}
