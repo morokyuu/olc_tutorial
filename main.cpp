@@ -40,6 +40,7 @@ private:
         olc::vf2d vel;
         float fAngle;
         float fTime;
+        olc::vf2d scale;
         olc::Pixel colour;
     };
     std::list<sFragment> listFragments;
@@ -152,7 +153,8 @@ public:
                 float fVelocity = float(rand()) / float(RAND_MAX) * 10.0f;
                 f.vel = { fVelocity * cos(fAngle), fVelocity * sin(fAngle) };
                 f.fAngle = fAngle;
-                f.fTime = 3.0f;
+                f.scale = { 1.0f, 1.0f };
+                f.fTime = 2.0f;
                 if (hitid == 1) f.colour = olc::RED;
                 if (hitid == 2) f.colour = olc::GREEN;
                 if (hitid == 3) f.colour = olc::YELLOW;
@@ -175,6 +177,7 @@ public:
             f.fAngle += 5.0f * fElapsedTime;
             f.fTime -= fElapsedTime;
             f.colour.a = (f.fTime / 3.0f) * 255;
+            f.scale += f.scale * fElapsedTime;
         }
 
         // Remove dead fragments
@@ -228,8 +231,8 @@ public:
 
         // Draw Fragments
         for (auto& f : listFragments)
-            DrawRotatedDecal(f.pos * vBlockSize, decFragment.get(), f.fAngle, { 4, 4 }, { 1, 1 }, f.colour);
-
+            DrawRotatedDecal(f.pos * vBlockSize, decFragment.get(), f.fAngle, { 4, 4 }, f.scale, f.colour);
+        
 		return true;
 	}
 };
